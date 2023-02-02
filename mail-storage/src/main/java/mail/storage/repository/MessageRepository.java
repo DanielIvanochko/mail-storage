@@ -17,7 +17,8 @@ public interface MessageRepository extends MongoRepository<Message, String> {
     List<Message> findByType(MessageType type);
 
     @Aggregation(value = {
-            "{match:{'date':#{#beginDate}}}"
+            "{match:{'date':{$gte:ISODate(#{#beginDate})}}",
+            "{match:{'date':{$lte:ISODate(#{#endDate})}}"
     })
     List<Message> findByDateRange(Date beginDate, Date endDate);
 
