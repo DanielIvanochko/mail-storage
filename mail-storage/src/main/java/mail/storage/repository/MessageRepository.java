@@ -2,8 +2,8 @@ package mail.storage.repository;
 
 import mail.storage.domain.Message;
 import mail.storage.domain.MessageType;
-import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -16,10 +16,7 @@ public interface MessageRepository extends MongoRepository<Message, String> {
     List<Message> findByTopic(String topic);
     List<Message> findByType(MessageType type);
 
-    @Aggregation(value = {
-            "{match:{'date':{$gte:ISODate(#{#beginDate})}}",
-            "{match:{'date':{$lte:ISODate(#{#endDate})}}"
-    })
+    @Query("{'date':{$gte:?0, $lte: ?1}}")
     List<Message> findByDateRange(Date beginDate, Date endDate);
 
     void deleteByNumber(Long number);

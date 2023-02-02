@@ -2,6 +2,7 @@ package mail.storage.controller;
 
 import lombok.RequiredArgsConstructor;
 import mail.storage.domain.Message;
+import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.dto.UpdateMessageDto;
 import mail.storage.exception.DraftMessageException;
@@ -34,12 +35,6 @@ public class MessageController {
         service.deleteMessage(number);
     }
 
-    /*
-     * 1. get message by number
-     * 2. get messages by date range
-     * 3. get messages by topic
-     * 4. get messages by type
-     * */
     @GetMapping("/{number}")
     public Message findMessageByNumber(@PathVariable final Long number) throws MessageWithNumberNotFound {
         return service.findMessageByNumber(number);
@@ -53,5 +48,10 @@ public class MessageController {
     @GetMapping("/type")
     public List<Message> findMessagesByType(@RequestParam("name") final String typeName) {
         return service.findMessagesByType(typeName);
+    }
+
+    @GetMapping("/date")
+    public List<Message> findMessagesByDateRange(@RequestBody final DateRangeDto dateRangeDto) {
+        return service.findMessagesByDateRange(dateRangeDto);
     }
 }

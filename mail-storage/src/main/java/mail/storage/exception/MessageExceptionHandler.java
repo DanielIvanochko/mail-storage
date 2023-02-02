@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 @Log4j2
 public class MessageExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(MessageException.class)
     public ResponseEntity<MessageExceptionInfo> handleDraftMessageException(final Exception exception) {
         final MessageExceptionInfo info = MessageExceptionInfo.builder()
                 .timeStamp(LocalDateTime.now())

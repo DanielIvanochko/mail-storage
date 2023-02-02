@@ -3,6 +3,7 @@ package mail.storage.service;
 import lombok.RequiredArgsConstructor;
 import mail.storage.domain.Message;
 import mail.storage.domain.MessageType;
+import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.dto.UpdateMessageDto;
 import mail.storage.exception.DraftMessageException;
@@ -51,5 +52,9 @@ public class MailStorageService {
 
     public void deleteMessage(final Long number) {
         repository.deleteByNumber(number);
+    }
+
+    public List<Message> findMessagesByDateRange(DateRangeDto dateRangeDto) {
+        return repository.findByDateRange(dateRangeDto.getBeginDate(), dateRangeDto.getEndDate());
     }
 }
