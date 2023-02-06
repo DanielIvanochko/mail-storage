@@ -1,13 +1,14 @@
 package mail.storage.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mail.storage.domain.MessageType;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+
 
 @Data
 @AllArgsConstructor
@@ -15,10 +16,10 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 public class MessageDto {
     @NotEmpty(message = "sender should not be empty")
-    @Email
+    @Email(message = "sender's email is not correct")
     private String sender;
     @NotEmpty(message = "receiver should not be empty")
-    @Email
+    @Email(message = "receiver's email is not correct")
     private String receiver;
     private Long number;
     private String topic;

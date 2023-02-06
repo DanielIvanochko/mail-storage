@@ -1,5 +1,6 @@
 package mail.storage.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mail.storage.domain.Message;
 import mail.storage.dto.DateRangeDto;
@@ -12,7 +13,6 @@ import mail.storage.service.MailStorageService;
 import org.springframework.cache.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
