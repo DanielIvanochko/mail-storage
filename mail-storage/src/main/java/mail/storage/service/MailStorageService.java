@@ -8,10 +8,12 @@ import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.dto.UpdateMessageDto;
 import mail.storage.exception.DraftMessageException;
+import mail.storage.exception.MessageWithNumberAlreadyExists;
 import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.repository.MessageRepository;
 import mail.storage.util.MessageUtils;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +25,12 @@ import java.util.List;
 public class MailStorageService {
     private final MessageRepository repository;
 
-    public void addMessage(final MessageDto messageDto) {
-        repository.save(MessageUtils.getMessageFromDto(messageDto));
+    public void addMessage(final MessageDto messageDto) throws MessageWithNumberAlreadyExists {
+        try {
+            repository.save(MessageUtils.getMessageFromDto(messageDto));
+        } catch (final DataIntegrityViolationException exception) {
+            throw new MessageWithNumberAlreadyExists("Message with such number already exists");
+        }
     }
 
     public Message updateMessage(final UpdateMessageDto updateMessageDto, final Long number) throws DraftMessageException {

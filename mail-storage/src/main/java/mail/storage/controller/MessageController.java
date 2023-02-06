@@ -6,6 +6,7 @@ import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.dto.UpdateMessageDto;
 import mail.storage.exception.DraftMessageException;
+import mail.storage.exception.MessageWithNumberAlreadyExists;
 import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.service.MailStorageService;
 import org.springframework.cache.annotation.*;
@@ -27,7 +28,7 @@ public class MessageController {
 
     //validation is not working... :(
     @PostMapping
-    public void addMessage(@Valid @RequestBody final MessageDto messageDto) {
+    public void addMessage(@Valid @RequestBody final MessageDto messageDto) throws MessageWithNumberAlreadyExists {
         service.addMessage(messageDto);
     }
 
