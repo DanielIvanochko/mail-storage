@@ -20,7 +20,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-@CacheConfig(cacheNames = {"Message"})
 public class MailStorageService {
     private final MessageRepository repository;
 

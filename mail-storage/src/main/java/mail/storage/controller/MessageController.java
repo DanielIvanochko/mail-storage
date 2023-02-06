@@ -8,10 +8,7 @@ import mail.storage.dto.UpdateMessageDto;
 import mail.storage.exception.DraftMessageException;
 import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.service.MailStorageService;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,13 +32,25 @@ public class MessageController {
     }
 
     @PutMapping("/{number}")
-    @CachePut(key = "#number", value = "message")
+    @Caching(
+            put = {
+                    @CachePut(key = "#number", value = "message")
+            },
+            evict = {
+                    @CacheEvict(cacheNames = {"topic", "type"}, allEntries = true)
+            }
+    )
     public Message updateDraftMessage(@RequestBody final UpdateMessageDto updateMessageDto, @PathVariable final Long number) throws DraftMessageException {
         return service.updateMessage(updateMessageDto, number);
     }
 
     @DeleteMapping("/{number}")
-    @CacheEvict(key = "#number", value = "message")
+    @Caching(
+            evict = {
+                    @CacheEvict(key = "#number", value = "message"),
+                    @CacheEvict(cacheNames = {"topic", "type"}, allEntries = true)
+            }
+    )
     public void deleteMessage(@PathVariable final Long number) {
         service.deleteMessage(number);
     }
@@ -53,12 +62,13 @@ public class MessageController {
     }
 
     @GetMapping("/topic")
-    @Cacheable(key = "#topicName", value = "message")
+    @Cacheable(key = "#topicName", value = "topic")
     public List<Message> findMessagesByTopic(@RequestParam("name") final String topicName) {
         return service.findMessagesByTopic(topicName);
     }
 
     @GetMapping("/type")
+    @Cacheable(key = "#typeName", value = "type")
     public List<Message> findMessagesByType(@RequestParam("name") final String typeName) {
         return service.findMessagesByType(typeName);
     }
