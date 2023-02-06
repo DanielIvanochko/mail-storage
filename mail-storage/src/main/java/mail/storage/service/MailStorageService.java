@@ -1,6 +1,7 @@
 package mail.storage.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import mail.storage.domain.Message;
 import mail.storage.domain.MessageType;
 import mail.storage.dto.DateRangeDto;
@@ -10,6 +11,7 @@ import mail.storage.exception.DraftMessageException;
 import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.repository.MessageRepository;
 import mail.storage.util.MessageUtils;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
+@CacheConfig(cacheNames = {"Message"})
 public class MailStorageService {
     private final MessageRepository repository;
 
@@ -24,16 +28,17 @@ public class MailStorageService {
         repository.save(MessageUtils.getMessageFromDto(messageDto));
     }
 
-    public void updateMessage(final UpdateMessageDto updateMessageDto, final Long number) throws DraftMessageException {
+    public Message updateMessage(final UpdateMessageDto updateMessageDto, final Long number) throws DraftMessageException {
         final Message message = repository.findByNumber(number).orElseThrow();
         if (!isMessageDraft(message)) {
             throw new DraftMessageException("The message must be draft for update");
         }
         MessageUtils.updateMessageWithDto(message, updateMessageDto);
-        repository.save(message);
+        return repository.save(message);
     }
 
     public Message findMessageByNumber(final Long number) throws MessageWithNumberNotFound {
+        log.info("called findMessageByNumber with number " + number);
         return repository.findByNumber(number).orElseThrow(() -> new MessageWithNumberNotFound(String.format("The message with number %d was not found", number)));
     }
 

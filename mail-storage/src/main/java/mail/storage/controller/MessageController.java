@@ -8,6 +8,10 @@ import mail.storage.dto.UpdateMessageDto;
 import mail.storage.exception.DraftMessageException;
 import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.service.MailStorageService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,6 +23,11 @@ import java.util.List;
 public class MessageController {
     private final MailStorageService service;
 
+    @GetMapping("/test1")
+    public String test() {
+        return "wassup ma men";
+    }
+
     //validation is not working... :(
     @PostMapping
     public void addMessage(@Valid @RequestBody final MessageDto messageDto) {
@@ -26,21 +35,25 @@ public class MessageController {
     }
 
     @PutMapping("/{number}")
-    public void updateDraftMessage(@RequestBody final UpdateMessageDto updateMessageDto, @PathVariable final Long number) throws DraftMessageException {
-        service.updateMessage(updateMessageDto, number);
+    @CachePut(key = "#number", value = "message")
+    public Message updateDraftMessage(@RequestBody final UpdateMessageDto updateMessageDto, @PathVariable final Long number) throws DraftMessageException {
+        return service.updateMessage(updateMessageDto, number);
     }
 
     @DeleteMapping("/{number}")
+    @CacheEvict(key = "#number", value = "message")
     public void deleteMessage(@PathVariable final Long number) {
         service.deleteMessage(number);
     }
 
     @GetMapping("/{number}")
+    @Cacheable(key = "#number", value = "message")
     public Message findMessageByNumber(@PathVariable final Long number) throws MessageWithNumberNotFound {
         return service.findMessageByNumber(number);
     }
 
     @GetMapping("/topic")
+    @Cacheable(key = "#topicName", value = "message")
     public List<Message> findMessagesByTopic(@RequestParam("name") final String topicName) {
         return service.findMessagesByTopic(topicName);
     }
