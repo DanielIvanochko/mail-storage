@@ -23,8 +23,8 @@ public class MessageUtils {
     public static void updateMessageWithDto(final Message message, final UpdateMessageDto messageDto) {
         message.setBody(messageDto.getBody());
         message.setSender(messageDto.getSender());
-        message.setReceiver(message.getReceiver());
+        message.setReceiver(messageDto.getReceiver());
         message.setTopic(messageDto.getTopic());
-        message.setAttachmentUrl(message.getAttachmentUrl());
+        message.setAttachmentUrl(messageDto.getAttachmentUrl());
     }
 }

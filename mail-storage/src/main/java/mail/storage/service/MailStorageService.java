@@ -1,5 +1,6 @@
 package mail.storage.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mail.storage.domain.Message;
@@ -22,6 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Log4j2
+@Getter
 public class MailStorageService {
     private final MessageRepository repository;
 
@@ -43,7 +45,6 @@ public class MailStorageService {
     }
 
     public Message findMessageByNumber(final Long number) throws MessageWithNumberNotFound {
-        log.info("called findMessageByNumber with number " + number);
         return repository.findByNumber(number).orElseThrow(() -> new MessageWithNumberNotFound(String.format("The message with number %d was not found", number)));
     }
 

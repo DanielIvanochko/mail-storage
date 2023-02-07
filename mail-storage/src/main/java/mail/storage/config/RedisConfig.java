@@ -10,7 +10,6 @@ import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import java.time.Duration;
 
 @Configuration
 public class RedisConfig extends CachingConfigurerSupport {
@@ -28,12 +27,8 @@ public class RedisConfig extends CachingConfigurerSupport {
         redisStandaloneConfiguration.setPort(Integer.valueOf(port));
 
         JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder();
-//        jedisClientConfiguration.connectTimeout(Duration.ofSeconds(Integer.valueOf(timeout)));// connection timeout
-
-        JedisConnectionFactory jedisConFactory = new JedisConnectionFactory(redisStandaloneConfiguration,
+        return new JedisConnectionFactory(redisStandaloneConfiguration,
                 jedisClientConfiguration.build());
-
-        return jedisConFactory;
     }
 
     @Bean
