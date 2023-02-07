@@ -2,6 +2,8 @@ package mail.storage;
 
 import lombok.SneakyThrows;
 import mail.storage.domain.Message;
+import mail.storage.domain.MessageType;
+import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.repository.MessageRepository;
 import mail.storage.service.MailStorageService;
@@ -12,6 +14,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
+import java.util.List;
+
+import static mail.storage.MailStorageTestUtils.getMessagesByCriteria;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,6 +71,57 @@ public class MailStorageServiceTest {
         assertEquals(messageDto.getBody(), message.getBody());
         assertEquals(messageDto.getReceiver(), message.getReceiver());
         assertEquals(messageDto.getAttachmentUrl(), message.getAttachmentUrl());
+    }
+
+    @Test
+    public void getMessagesByTopic() {
+        addTestMessagesToDb();
+        var messagesByTopic = mailStorageService.findMessagesByTopic("emergency");
+        var expectedMessagesByTopic = getMessagesByCriteria(message -> message.getTopic().equals("emergency"));
+        assertEqualityOfTwoMessageList(expectedMessagesByTopic, messagesByTopic);
+    }
+
+    @Test
+    public void getMessagesByType() {
+        addTestMessagesToDb();
+        var messagesByType = mailStorageService.findMessagesByType("ad");
+        var expectedMessagesByType = getMessagesByCriteria(message -> message.getType().equals(MessageType.AD));
+        assertEqualityOfTwoMessageList(expectedMessagesByType, messagesByType);
+    }
+
+    @Test
+    public void getMessagesByDateRange() {
+        addTestMessagesToDb();
+        final var beginDate = MailStorageTestUtils.getBeginDate();
+        final var endDate = MailStorageTestUtils.getEndDate();
+        final DateRangeDto dateRangeDto = DateRangeDto.builder()
+                .beginDate(beginDate)
+                .endDate(endDate)
+                .build();
+        var messagesByDateRange = mailStorageService.findMessagesByDateRange(dateRangeDto);
+        var expectedMessages = getMessagesByCriteria(message -> isMessageDateInRange(message, dateRangeDto));
+        assertEqualityOfTwoMessageList(expectedMessages, messagesByDateRange);
+    }
+
+    private boolean isMessageDateInRange(final Message message, final DateRangeDto dateRangeDto) {
+        final var messageDate = message.getDate();
+        return (messageDate.after(dateRangeDto.getBeginDate())
+                || messageDate.equals(dateRangeDto.getBeginDate()))
+                &&
+                (message.getDate().before(dateRangeDto.getEndDate())
+                        || messageDate.equals(dateRangeDto.getEndDate()));
+    }
+
+    private void assertEqualityOfTwoMessageList(final List<Message> expected, final List<Message> actual) {
+        assertEquals(expected.size(), actual.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), actual.get(i));
+        }
+    }
+
+    private void addTestMessagesToDb() {
+        final var messagesList = MailStorageTestUtils.getTestMessages();
+        messageRepository.saveAll(messagesList);
     }
 
 }

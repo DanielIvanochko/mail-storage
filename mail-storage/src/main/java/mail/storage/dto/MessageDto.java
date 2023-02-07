@@ -21,6 +21,7 @@ public class MessageDto {
     @NotEmpty(message = "receiver should not be empty")
     @Email(message = "receiver's email is not correct")
     private String receiver;
+    @NotEmpty(message = "provide unique number for message")
     private Long number;
     private String topic;
     private String body;

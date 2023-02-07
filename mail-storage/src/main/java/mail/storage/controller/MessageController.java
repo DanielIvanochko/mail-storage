@@ -20,13 +20,6 @@ import java.util.List;
 @RequestMapping("/message")
 public class MessageController {
     private final MailStorageService service;
-
-    @GetMapping("/test1")
-    public String test() {
-        return "wassup ma men";
-    }
-
-    //validation is not working... :(
     @PostMapping
     public void addMessage(@Valid @RequestBody final MessageDto messageDto) throws MessageWithNumberAlreadyExists {
         service.addMessage(messageDto);
