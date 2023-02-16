@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -21,8 +22,8 @@ import static mail.storage.MailStorageTestUtils.getMessagesByCriteria;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DataMongoTest
-@ExtendWith(SpringExtension.class)
+@SpringBootTest(properties = {"spring.data.mongodb.database=test","spring.data.mongodb.port=27017",
+"spring.mongodb.embedded.version=4.8.2"})
 class MailStorageServiceTest {
     private final MessageRepository messageRepository;
     private final MailStorageService mailStorageService;
