@@ -7,6 +7,8 @@ import mail.storage.dto.UpdateMessageDto;
 import java.util.Date;
 
 public class MessageUtils {
+    private MessageUtils() {}
+
     public static Message getMessageFromDto(final MessageDto messageDto) {
         return Message.builder()
                 .body(messageDto.getBody())

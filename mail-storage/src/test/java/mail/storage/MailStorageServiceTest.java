@@ -20,26 +20,24 @@ import static mail.storage.MailStorageTestUtils.getMessagesByCriteria;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DataMongoTest
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class MailStorageServiceTest {
+class MailStorageServiceTest {
     private final MessageRepository messageRepository;
     private final MailStorageService mailStorageService;
 
     @Autowired
-    public MailStorageServiceTest(MessageRepository messageRepository) {
+    MailStorageServiceTest(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
         mailStorageService = new MailStorageService(messageRepository);
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         messageRepository.deleteAll();
     }
 
     @SneakyThrows
     @Test
-    public void saveMessageTest() {
+    void saveMessageTest() {
         final MessageDto messageDto = MailStorageTestUtils.getMessageDto();
         mailStorageService.addMessage(messageDto);
         final Message message = messageRepository.findByNumber(1L).orElseThrow();
@@ -52,7 +50,7 @@ public class MailStorageServiceTest {
     }
 
     @Test
-    public void deleteMessageTest() {
+    void deleteMessageTest() {
         final MessageDto messageDto = MailStorageTestUtils.getMessageDto();
         messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
         mailStorageService.deleteMessage(messageDto.getNumber());
@@ -62,7 +60,7 @@ public class MailStorageServiceTest {
 
     @SneakyThrows
     @Test
-    public void updateMessageTest() {
+    void updateMessageTest() {
         messageRepository.save(MessageUtils.getMessageFromDto(MailStorageTestUtils.getMessageDto()));
         final var messageDto = MailStorageTestUtils.getMessageDtoForUpdate();
         mailStorageService.updateMessage(messageDto, 1L);
@@ -74,7 +72,7 @@ public class MailStorageServiceTest {
     }
 
     @Test
-    public void getMessagesByTopic() {
+    void getMessagesByTopic() {
         addTestMessagesToDb();
         var messagesByTopic = mailStorageService.findMessagesByTopic("emergency");
         var expectedMessagesByTopic = getMessagesByCriteria(message -> message.getTopic().equals("emergency"));
@@ -82,7 +80,7 @@ public class MailStorageServiceTest {
     }
 
     @Test
-    public void getMessagesByType() {
+    void getMessagesByType() {
         addTestMessagesToDb();
         var messagesByType = mailStorageService.findMessagesByType("ad");
         var expectedMessagesByType = getMessagesByCriteria(message -> message.getType().equals(MessageType.AD));
@@ -90,7 +88,7 @@ public class MailStorageServiceTest {
     }
 
     @Test
-    public void getMessagesByDateRange() {
+    void getMessagesByDateRange() {
         addTestMessagesToDb();
         final var beginDate = MailStorageTestUtils.getBeginDate();
         final var endDate = MailStorageTestUtils.getEndDate();
@@ -103,7 +101,7 @@ public class MailStorageServiceTest {
         assertEqualityOfTwoMessageList(expectedMessages, messagesByDateRange);
     }
 
-    private boolean isMessageDateInRange(final Message message, final DateRangeDto dateRangeDto) {
+    boolean isMessageDateInRange(final Message message, final DateRangeDto dateRangeDto) {
         final var messageDate = message.getDate();
         return (messageDate.after(dateRangeDto.getBeginDate())
                 || messageDate.equals(dateRangeDto.getBeginDate()))
@@ -112,14 +110,14 @@ public class MailStorageServiceTest {
                         || messageDate.equals(dateRangeDto.getEndDate()));
     }
 
-    private void assertEqualityOfTwoMessageList(final List<Message> expected, final List<Message> actual) {
+    void assertEqualityOfTwoMessageList(final List<Message> expected, final List<Message> actual) {
         assertEquals(expected.size(), actual.size());
         for (int i = 0; i < expected.size(); i++) {
             assertEquals(expected.get(i), actual.get(i));
         }
     }
 
-    private void addTestMessagesToDb() {
+    void addTestMessagesToDb() {
         final var messagesList = MailStorageTestUtils.getTestMessages();
         messageRepository.saveAll(messagesList);
     }
