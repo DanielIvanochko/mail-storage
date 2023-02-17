@@ -17,7 +17,6 @@
 		<java.version>17</java.version>
 		<sonar.organization>danielivanochko</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.jacoco.excludes>mail/storage/*</sonar.jacoco.excludes>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -102,6 +101,14 @@
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>0.8.7</version>
+						<configuration>
+							<excludes>
+								<exclude>**/exception/*</exclude>
+								<exclude>**/domain/*</exclude>
+								<exclude>**/dto/*</exclude>
+								<exclude>**/config/*</exclude>
+							</excludes>
+						</configuration>
 						<executions>
 							<execution>
 								<id>prepare-agent</id>
@@ -117,6 +124,7 @@
 								<configuration>
 									<formats>
 										<format>XML</format>
+										<format>HTML</format>
 									</formats>
 								</configuration>
 							</execution>
