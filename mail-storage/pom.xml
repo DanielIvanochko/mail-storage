@@ -101,6 +101,16 @@
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>0.8.7</version>
+						<configuration>
+							<excludes>
+								<exclude>**/config/*</exclude>
+								<exclude>**/domain/*</exclude>
+								<exclude>**/dto/*</exclude>
+								<exclude>**/exception/*</exclude>
+								<exclude>mail/storage/**/MessageException.class</exclude>
+								<exclude>**/dto/*Dto.*</exclude>
+							</excludes>
+						</configuration>
 						<executions>
 							<execution>
 								<id>prepare-agent</id>
