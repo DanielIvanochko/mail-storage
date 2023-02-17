@@ -5,6 +5,9 @@ import mail.storage.domain.Message;
 import mail.storage.domain.MessageType;
 import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
+import mail.storage.exception.DraftMessageException;
+import mail.storage.exception.MessageWithNumberAlreadyExists;
+import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.repository.MessageRepository;
 import mail.storage.service.MailStorageService;
 import mail.storage.util.MessageUtils;
@@ -12,16 +15,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 
 import java.util.List;
 
-import static mail.storage.MailStorageTestUtils.getMessagesByCriteria;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static mail.storage.MailStorageTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -34,6 +34,25 @@ class MailStorageServiceTest {
     MailStorageServiceTest(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
         mailStorageService = new MailStorageService(messageRepository);
+    }
+
+    @Test
+    void createMessageThatExistsTest() {
+        messageRepository.save(MessageUtils.getMessageFromDto(MailStorageTestUtils.getMessageDto()));
+        assertThrows(MessageWithNumberAlreadyExists.class, () -> mailStorageService.addMessage(getMessageDto()));
+    }
+
+    @Test
+    void updateNotDraftMessageTest() {
+        var messageDto = MailStorageTestUtils.getMessageDto();
+        messageDto.setType(MessageType.MAIN);
+        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        assertThrows(DraftMessageException.class, () -> mailStorageService.updateMessage(getMessageDtoForUpdate(), 1L));
+    }
+
+    @Test
+    void findNotExistingMessageTest() {
+        assertThrows(MessageWithNumberNotFound.class, () -> mailStorageService.findMessageByNumber(1L));
     }
 
     @AfterEach
