@@ -1,21 +1,27 @@
 package mail.storage;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mail.storage.controller.MessageController;
+import mail.storage.domain.Message;
+import mail.storage.dto.MessageDto;
+import mail.storage.repository.MessageRepository;
+import mail.storage.util.MessageUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static mail.storage.MailStorageTestUtils.getMessageDto;
-import static org.springframework.http.ResponseEntity.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+import java.util.Arrays;
+
+import static mail.storage.MailStorageTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
 @SpringBootTest
@@ -23,27 +29,102 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class MessageControllerTest {
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
+    private final MessageRepository messageRepository;
 
     @Autowired
-    public MessageControllerTest(MessageController messageController) {
+    public MessageControllerTest(MessageController messageController, MessageRepository messageRepository) {
         this.mvc = MockMvcBuilders
                 .standaloneSetup(messageController)
                 .build();
         this.objectMapper = new ObjectMapper();
+        this.messageRepository = messageRepository;
     }
 
+    @BeforeEach
+    public void tearDown() {
+        messageRepository.deleteAll();
+    }
+
+    @SneakyThrows
     @Test
     public void addMessageTest() {
-        String messageJson = null;
-        try {
-            messageJson = objectMapper.writeValueAsString(getMessageDto());
-            var result = mvc.perform(post("/message")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(messageJson))
-                    .andReturn();
-            System.out.println(result);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        String messageJson = objectMapper.writeValueAsString(getMessageDto());
+        var result = mvc.perform(post("/message")
+                        .contentType(APPLICATION_JSON)
+                        .content(messageJson))
+                .andReturn();
+        assertEquals(result.getResponse().getStatus(), 200);
+    }
+
+    @SneakyThrows
+    @Test
+    public void updateMessageTest() {
+        messageRepository.save(MessageUtils.getMessageFromDto(getMessageDto()));
+        String updateMessageJson = objectMapper.writeValueAsString(getMessageDtoForUpdate());
+        var result = mvc.perform(put("/message/1")
+                        .contentType(APPLICATION_JSON)
+                        .content(updateMessageJson))
+                .andReturn();
+        assertEquals(result.getResponse().getStatus(), 200);
+    }
+
+
+    @SneakyThrows
+    @Test
+    public void getMessageByNumber() {
+        MessageDto messageDto = getMessageDto();
+        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        var result = mvc.perform(get("/message/1")
+                        .contentType(APPLICATION_JSON))
+                .andReturn();
+        var entityJson = result.getResponse().getContentAsString();
+        Message message = objectMapper.readValue(entityJson, Message.class);
+        assertEquals(result.getResponse().getStatus(), 200);
+        assertEquals(messageDto.getNumber(), message.getNumber());
+        assertEquals(messageDto.getType(), message.getType());
+        assertEquals(messageDto.getReceiver(), message.getReceiver());
+        assertEquals(messageDto.getSender(), message.getSender());
+        assertEquals(messageDto.getBody(), message.getBody());
+        assertEquals(messageDto.getAttachmentUrl(), message.getAttachmentUrl());
+        assertEquals(messageDto.getTopic(), message.getTopic());
+        assertNotNull(message.getId());
+    }
+
+    @SneakyThrows
+    @Test
+    public void deleteMessageByNumber() {
+        MessageDto messageDto = getMessageDto();
+        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        var result = mvc.perform(delete("/message/1"))
+                .andReturn();
+        var message = messageRepository.findByNumber(1L);
+        assertEquals(result.getResponse().getStatus(), 200);
+        assertTrue(message.isEmpty());
+    }
+
+    @SneakyThrows
+    @Test
+    public void getMessagesByTopic() {
+        MessageDto messageDto = getMessageDto();
+        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        var result = mvc.perform(get("/message/topic?name=" + messageDto.getTopic()))
+                .andReturn();
+        Message[] messages = objectMapper.readValue(result.getResponse().getContentAsString(), Message[].class);
+        Message firstMessage = messages[0];
+        assertEquals(result.getResponse().getStatus(), 200);
+        assertEquals(messageDto.getTopic(), firstMessage.getTopic());
+    }
+
+    @SneakyThrows
+    @Test
+    public void getMessagesByType() {
+        MessageDto messageDto = getMessageDto();
+        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        var result = mvc.perform(get("/message/type?name=" + messageDto.getType()))
+                .andReturn();
+        Message[] messages = objectMapper.readValue(result.getResponse().getContentAsString(), Message[].class);
+        Message firstMessage = messages[0];
+        assertEquals(result.getResponse().getStatus(), 200);
+        assertEquals(messageDto.getType(), firstMessage.getType());
     }
 }

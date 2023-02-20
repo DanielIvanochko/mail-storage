@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static mail.storage.util.MessageUtils.getMessageFromDto;
+
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +29,15 @@ public class MailStorageService {
     private final MessageRepository repository;
 
     public void addMessage(final MessageDto messageDto) throws MessageWithNumberAlreadyExists {
-        try {
-            repository.save(MessageUtils.getMessageFromDto(messageDto));
-        } catch (final DataIntegrityViolationException exception) {
-            throw new MessageWithNumberAlreadyExists("Message with such number already exists");
+        if (!numberOfMessageAlreadyExists(messageDto)) {
+            repository.save(getMessageFromDto(messageDto));
+        } else {
+            throw new MessageWithNumberAlreadyExists(String.format("Message with number %d already exists", messageDto.getNumber()));
         }
+    }
+
+    private boolean numberOfMessageAlreadyExists(final MessageDto messageDto) {
+        return repository.findByNumber(messageDto.getNumber()).isPresent();
     }
 
     public Message updateMessage(final UpdateMessageDto updateMessageDto, final Long number) throws DraftMessageException {

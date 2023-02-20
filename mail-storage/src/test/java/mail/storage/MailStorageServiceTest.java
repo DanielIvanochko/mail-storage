@@ -13,7 +13,6 @@ import mail.storage.service.MailStorageService;
 import mail.storage.util.MessageUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.PropertySource;
@@ -24,7 +23,6 @@ import static mail.storage.MailStorageTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @PropertySource(value = "application.properties")
 class MailStorageServiceTest {
     private final MessageRepository messageRepository;
@@ -36,6 +34,7 @@ class MailStorageServiceTest {
         mailStorageService = new MailStorageService(messageRepository);
     }
 
+    @SneakyThrows
     @Test
     void createMessageThatExistsTest() {
         messageRepository.save(MessageUtils.getMessageFromDto(MailStorageTestUtils.getMessageDto()));
