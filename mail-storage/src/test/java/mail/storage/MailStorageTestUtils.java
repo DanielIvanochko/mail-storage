@@ -2,6 +2,7 @@ package mail.storage;
 
 import mail.storage.domain.Message;
 import mail.storage.domain.MessageType;
+import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.dto.UpdateMessageDto;
 
@@ -92,5 +93,14 @@ public class MailStorageTestUtils {
 
     public static List<Message> getTestMessages() {
         return messages;
+    }
+
+    public static boolean isMessageDateInRange(final Message message, final DateRangeDto dateRangeDto) {
+        final var messageDate = message.getDate();
+        return (messageDate.after(dateRangeDto.getBeginDate())
+                || messageDate.equals(dateRangeDto.getBeginDate()))
+                &&
+                (message.getDate().before(dateRangeDto.getEndDate())
+                        || messageDate.equals(dateRangeDto.getEndDate()));
     }
 }

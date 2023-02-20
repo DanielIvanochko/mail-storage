@@ -85,6 +85,7 @@ class MailStorageServiceTest {
     @SneakyThrows
     @Test
     void updateMessageTest() {
+        messageRepository.deleteAll();
         messageRepository.save(MessageUtils.getMessageFromDto(MailStorageTestUtils.getMessageDto()));
         final var messageDto = MailStorageTestUtils.getMessageDtoForUpdate();
         mailStorageService.updateMessage(messageDto, 1L);
@@ -125,14 +126,6 @@ class MailStorageServiceTest {
         assertEqualityOfTwoMessageList(expectedMessages, messagesByDateRange);
     }
 
-    boolean isMessageDateInRange(final Message message, final DateRangeDto dateRangeDto) {
-        final var messageDate = message.getDate();
-        return (messageDate.after(dateRangeDto.getBeginDate())
-                || messageDate.equals(dateRangeDto.getBeginDate()))
-                &&
-                (message.getDate().before(dateRangeDto.getEndDate())
-                        || messageDate.equals(dateRangeDto.getEndDate()));
-    }
 
     void assertEqualityOfTwoMessageList(final List<Message> expected, final List<Message> actual) {
         assertEquals(expected.size(), actual.size());
