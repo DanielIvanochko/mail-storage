@@ -11,10 +11,9 @@ import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.repository.MessageRepository;
 import mail.storage.service.MailStorageService;
 import mail.storage.util.MessageUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 
 import java.util.List;
@@ -22,7 +21,7 @@ import java.util.List;
 import static mail.storage.MailStorageTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataMongoTest
+@SpringBootTest
 @PropertySource(value = "application.properties")
 class MailStorageServiceTest {
     private final MessageRepository messageRepository;
