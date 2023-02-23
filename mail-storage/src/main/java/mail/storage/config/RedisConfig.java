@@ -15,10 +15,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 @ConditionalOnProperty(name = "redis.cache.enabled", havingValue = "true")
 public class RedisConfig {
 
-    @Value(value="${spring.redis.host}")
+    @Value(value = "${spring.redis.host}")
     private String host;
 
-    @Value(value="${spring.redis.port}")
+    @Value(value = "${spring.redis.port}")
     private String port;
 
     @Bean

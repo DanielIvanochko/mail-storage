@@ -21,8 +21,8 @@ import static java.util.stream.Collectors.toMap;
 @Log4j2
 public class MessageExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MessageException.class)
-    public ResponseEntity<MessageExceptionInfo> handleDraftMessageException(final Exception exception) {
-        final MessageExceptionInfo info = createMessageExceptionInfo(exception);
+    public ResponseEntity<MessageExceptionInfo> handleDraftMessageException(Exception exception) {
+        MessageExceptionInfo info = createMessageExceptionInfo(exception);
         log.error("Message exception caught");
         log.error(exception.getMessage());
         return ResponseEntity
@@ -43,7 +43,7 @@ public class MessageExceptionHandler extends ResponseEntityExceptionHandler {
                 .collect(toMap(FieldError::getField, DefaultMessageSourceResolvable::getDefaultMessage));
     }
 
-    private MessageExceptionInfo createMessageExceptionInfo(final Exception exception) {
+    private MessageExceptionInfo createMessageExceptionInfo(Exception exception) {
         return MessageExceptionInfo.builder()
                 .timeStamp(LocalDateTime.now())
                 .message(exception.getMessage())

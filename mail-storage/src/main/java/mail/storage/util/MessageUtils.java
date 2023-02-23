@@ -7,9 +7,10 @@ import mail.storage.dto.UpdateMessageDto;
 import java.util.Date;
 
 public class MessageUtils {
-    private MessageUtils() {}
+    private MessageUtils() {
+    }
 
-    public static Message getMessageFromDto(final MessageDto messageDto) {
+    public static Message getMessageFromDto(MessageDto messageDto) {
         return Message.builder()
                 .body(messageDto.getBody())
                 .topic(messageDto.getTopic())
@@ -22,7 +23,7 @@ public class MessageUtils {
                 .build();
     }
 
-    public static void updateMessageWithDto(final Message message, final UpdateMessageDto messageDto) {
+    public static void updateMessageWithDto(Message message, UpdateMessageDto messageDto) {
         message.setBody(messageDto.getBody());
         message.setSender(messageDto.getSender());
         message.setReceiver(messageDto.getReceiver());

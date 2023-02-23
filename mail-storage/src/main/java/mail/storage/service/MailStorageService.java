@@ -1,8 +1,5 @@
 package mail.storage.service;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import mail.storage.domain.Message;
 import mail.storage.domain.MessageType;
 import mail.storage.dto.DateRangeDto;
@@ -11,66 +8,21 @@ import mail.storage.dto.UpdateMessageDto;
 import mail.storage.exception.DraftMessageException;
 import mail.storage.exception.MessageWithNumberAlreadyExists;
 import mail.storage.exception.MessageWithNumberNotFound;
-import mail.storage.repository.MessageRepository;
-import mail.storage.util.MessageUtils;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static mail.storage.util.MessageUtils.getMessageFromDto;
+public interface MailStorageService {
+    void addMessage(MessageDto messageDto) throws MessageWithNumberAlreadyExists;
 
+    void deleteMessage(Long number);
 
-@Service
-@RequiredArgsConstructor
-@Log4j2
-@Getter
-public class MailStorageService {
-    private final MessageRepository repository;
+    Message updateMessage(UpdateMessageDto updateMessageDto, Long number) throws DraftMessageException;
 
-    public void addMessage(final MessageDto messageDto) throws MessageWithNumberAlreadyExists {
-        if (!numberOfMessageAlreadyExists(messageDto)) {
-            repository.save(getMessageFromDto(messageDto));
-        } else {
-            throw new MessageWithNumberAlreadyExists(String.format("Message with number %d already exists", messageDto.getNumber()));
-        }
-    }
+    Message findMessageByNumber(Long number) throws MessageWithNumberNotFound;
 
-    private boolean numberOfMessageAlreadyExists(final MessageDto messageDto) {
-        return repository.findByNumber(messageDto.getNumber()).isPresent();
-    }
+    List<Message> findMessagesByType(String type);
 
-    public Message updateMessage(final UpdateMessageDto updateMessageDto, final Long number) throws DraftMessageException {
-        final Message message = repository.findByNumber(number).orElseThrow();
-        if (!isMessageDraft(message)) {
-            throw new DraftMessageException("The message must be draft for update");
-        }
-        MessageUtils.updateMessageWithDto(message, updateMessageDto);
-        return repository.save(message);
-    }
+    List<Message> findMessagesByTopic(String topic);
 
-    public Message findMessageByNumber(final Long number) throws MessageWithNumberNotFound {
-        return repository.findByNumber(number).orElseThrow(() -> new MessageWithNumberNotFound(String.format("The message with number %d was not found", number)));
-    }
-
-    public List<Message> findMessagesByType(final String type) {
-        return repository.findByType(MessageType.valueOf(type.toUpperCase()));
-    }
-
-    public List<Message> findMessagesByTopic(final String topic) {
-        return repository.findByTopic(topic);
-    }
-
-    private boolean isMessageDraft(final Message message) {
-        return message.getType().equals(MessageType.DRAFT);
-    }
-
-
-    public void deleteMessage(final Long number) {
-        repository.deleteByNumber(number);
-    }
-
-    public List<Message> findMessagesByDateRange(DateRangeDto dateRangeDto) {
-        return repository.findByDateRange(dateRangeDto.getBeginDate(), dateRangeDto.getEndDate());
-    }
+    List<Message> findMessagesByDateRange(DateRangeDto dateRangeDto);
 }

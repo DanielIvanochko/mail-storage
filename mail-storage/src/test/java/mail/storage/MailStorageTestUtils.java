@@ -88,7 +88,9 @@ public class MailStorageTestUtils {
     }
 
     public static List<Message> getMessagesByCriteria(final Predicate<Message> messagePredicate) {
-        return messages.stream().filter(messagePredicate).toList();
+        return messages.stream()
+                .filter(messagePredicate)
+                .toList();
     }
 
     public static List<Message> getTestMessages() {

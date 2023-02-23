@@ -20,8 +20,9 @@ import java.util.List;
 @RequestMapping("/message")
 public class MessageController {
     private final MailStorageService service;
+
     @PostMapping
-    public void addMessage(@Valid @RequestBody final MessageDto messageDto) throws MessageWithNumberAlreadyExists {
+    public void addMessage(@Valid @RequestBody MessageDto messageDto) throws MessageWithNumberAlreadyExists {
         service.addMessage(messageDto);
     }
 
@@ -34,7 +35,8 @@ public class MessageController {
                     @CacheEvict(cacheNames = {"topic", "type"}, allEntries = true)
             }
     )
-    public Message updateDraftMessage(@RequestBody final UpdateMessageDto updateMessageDto, @PathVariable final Long number) throws DraftMessageException {
+    public Message updateDraftMessage(@Valid @RequestBody UpdateMessageDto updateMessageDto, @PathVariable Long number)
+            throws DraftMessageException {
         return service.updateMessage(updateMessageDto, number);
     }
 
@@ -45,30 +47,30 @@ public class MessageController {
                     @CacheEvict(cacheNames = {"topic", "type"}, allEntries = true)
             }
     )
-    public void deleteMessage(@PathVariable final Long number) {
+    public void deleteMessage(@PathVariable Long number) {
         service.deleteMessage(number);
     }
 
     @GetMapping("/{number}")
     @Cacheable(key = "#number", value = "message")
-    public Message findMessageByNumber(@PathVariable final Long number) throws MessageWithNumberNotFound {
+    public Message findMessageByNumber(@PathVariable Long number) throws MessageWithNumberNotFound {
         return service.findMessageByNumber(number);
     }
 
     @GetMapping("/topic")
     @Cacheable(key = "#topicName", value = "topic")
-    public List<Message> findMessagesByTopic(@RequestParam("name") final String topicName) {
+    public List<Message> findMessagesByTopic(@RequestParam("name") String topicName) {
         return service.findMessagesByTopic(topicName);
     }
 
     @GetMapping("/type")
     @Cacheable(key = "#typeName", value = "type")
-    public List<Message> findMessagesByType(@RequestParam("name") final String typeName) {
+    public List<Message> findMessagesByType(@RequestParam("name") String typeName) {
         return service.findMessagesByType(typeName);
     }
 
     @GetMapping("/date")
-    public List<Message> findMessagesByDateRange(@RequestBody final DateRangeDto dateRangeDto) {
+    public List<Message> findMessagesByDateRange(@RequestBody DateRangeDto dateRangeDto) {
         return service.findMessagesByDateRange(dateRangeDto);
     }
 }

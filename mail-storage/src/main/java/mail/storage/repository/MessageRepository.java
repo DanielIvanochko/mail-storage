@@ -13,10 +13,12 @@ import java.util.Optional;
 @Repository
 public interface MessageRepository extends MongoRepository<Message, String> {
     Optional<Message> findByNumber(Long number);
+
     List<Message> findByTopic(String topic);
+
     List<Message> findByType(MessageType type);
 
-    @Query("{'date':{$gte:?0, $lte: ?1}}")
+    @Query("{'date': {$gte: ?0, $lte: ?1} }")
     List<Message> findByDateRange(Date beginDate, Date endDate);
 
     void deleteByNumber(Long number);
