@@ -1,7 +1,7 @@
 package mail.storage.exception;
 
-public class MessageException extends Exception{
-    public MessageException(String message) {
-        super(message);
-    }
+import lombok.experimental.StandardException;
+
+@StandardException
+public class MessageException extends Exception {
 }
