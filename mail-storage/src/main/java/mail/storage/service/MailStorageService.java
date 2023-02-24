@@ -16,7 +16,7 @@ public interface MailStorageService {
 
     void deleteMessage(Long number);
 
-    Message updateMessage(UpdateMessageDto updateMessageDto, Long number) throws DraftMessageException;
+    Message updateMessage(UpdateMessageDto updateMessageDto, Long number) throws DraftMessageException, MessageWithNumberNotFound;
 
     Message findMessageByNumber(Long number) throws MessageWithNumberNotFound;
 

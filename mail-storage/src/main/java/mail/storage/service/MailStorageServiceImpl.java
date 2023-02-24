@@ -39,8 +39,8 @@ public class MailStorageServiceImpl implements MailStorageService {
         return repository.findByNumber(messageDto.getNumber()).isPresent();
     }
 
-    public Message updateMessage(UpdateMessageDto updateMessageDto, Long number) throws DraftMessageException {
-        final Message message = repository.findByNumber(number).orElseThrow();
+    public Message updateMessage(UpdateMessageDto updateMessageDto, Long number) throws DraftMessageException, MessageWithNumberNotFound {
+        final Message message = findMessageByNumber(number);
         if (isMessageDraft(message)) {
             MessageUtils.updateMessageWithDto(message, updateMessageDto);
             return repository.save(message);

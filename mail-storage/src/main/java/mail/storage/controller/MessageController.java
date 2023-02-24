@@ -36,7 +36,7 @@ public class MessageController {
             }
     )
     public Message updateDraftMessage(@Valid @RequestBody UpdateMessageDto updateMessageDto, @PathVariable Long number)
-            throws DraftMessageException {
+            throws DraftMessageException, MessageWithNumberNotFound {
         return service.updateMessage(updateMessageDto, number);
     }
 
