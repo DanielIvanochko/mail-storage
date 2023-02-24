@@ -6,19 +6,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mail.storage.domain.MessageType;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UpdateMessageDto {
-    @NotEmpty(message = "Sender's email should not be empty")
+    @NotEmpty(message = "Sender's email must not be empty")
     @Email(message = "sender's email is not correct")
     private String sender;
-    @NotEmpty(message = "Receiver's email should not be empty")
+    @NotEmpty(message = "Receiver's email must not be empty")
     @Email(message = "Receiver's email is not correct")
     private String receiver;
     private String topic;
     private String body;
     private String attachmentUrl;
+    private MessageType type;
 }

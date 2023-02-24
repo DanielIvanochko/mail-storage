@@ -29,5 +29,6 @@ public class MessageUtils {
         message.setReceiver(messageDto.getReceiver());
         message.setTopic(messageDto.getTopic());
         message.setAttachmentUrl(messageDto.getAttachmentUrl());
+        message.setType(messageDto.getType());
     }
 }

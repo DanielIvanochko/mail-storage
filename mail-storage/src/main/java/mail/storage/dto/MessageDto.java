@@ -13,10 +13,10 @@ import mail.storage.domain.MessageType;
 @NoArgsConstructor
 @Builder
 public class MessageDto {
-    @NotEmpty(message = "Sender's email should not be empty")
+    @NotEmpty(message = "Sender's email must not be empty")
     @Email(message = "sender's email is not correct")
     private String sender;
-    @NotEmpty(message = "Receiver's email should not be empty")
+    @NotEmpty(message = "Receiver's email must not be empty")
     @Email(message = "Receiver's email is not correct")
     private String receiver;
     private Long number;
