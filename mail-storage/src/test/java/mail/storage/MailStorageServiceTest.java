@@ -10,6 +10,7 @@ import mail.storage.exception.MessageWithNumberAlreadyExists;
 import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.repository.MessageRepository;
 import mail.storage.service.MailStorageService;
+import mail.storage.service.MailStorageServiceImpl;
 import mail.storage.util.MessageUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,9 @@ class MailStorageServiceTest {
     private final MailStorageService mailStorageService;
 
     @Autowired
-    MailStorageServiceTest(MessageRepository messageRepository, MailStorageService mailStorageService) {
+    MailStorageServiceTest(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
-        this.mailStorageService = mailStorageService;
+        this.mailStorageService = new MailStorageServiceImpl(messageRepository);
     }
 
     @AfterEach
