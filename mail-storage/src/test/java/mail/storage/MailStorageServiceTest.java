@@ -39,15 +39,14 @@ class MailStorageServiceTest {
         messageRepository.deleteAll();
     }
 
-    @SneakyThrows
     @Test
-    void createMessageThatExistsTest() {
+    void createMessageThatExists() {
         messageRepository.save(MessageUtils.getMessageFromDto(MailStorageTestUtils.getMessageDto()));
         assertThrows(MessageWithNumberAlreadyExists.class, () -> mailStorageService.addMessage(getMessageDto()));
     }
 
     @Test
-    void updateNotDraftMessageTest() {
+    void updateNotDraftMessage() {
         var messageDto = MailStorageTestUtils.getMessageDto();
         messageDto.setType(MessageType.MAIN);
         messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
@@ -55,13 +54,13 @@ class MailStorageServiceTest {
     }
 
     @Test
-    void findNotExistingMessageTest() {
+    void findNotExistingMessage() {
         assertThrows(MessageWithNumberNotFound.class, () -> mailStorageService.findMessageByNumber(1L));
     }
 
     @SneakyThrows
     @Test
-    void saveMessageTest() {
+    void saveMessage() {
         MessageDto messageDto = MailStorageTestUtils.getMessageDto();
         mailStorageService.addMessage(messageDto);
         Message message = messageRepository.findByNumber(1L).orElseThrow();
@@ -74,7 +73,8 @@ class MailStorageServiceTest {
     }
 
     @Test
-    void deleteMessageTest() {
+    @SneakyThrows
+    void deleteMessage() {
         MessageDto messageDto = MailStorageTestUtils.getMessageDto();
         messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
         mailStorageService.deleteMessage(messageDto.getNumber());
@@ -82,9 +82,14 @@ class MailStorageServiceTest {
         assertTrue(messageOptional.isEmpty());
     }
 
+    @Test
+    void deleteNotExistingMessage() {
+        assertThrows(MessageWithNumberNotFound.class, () -> mailStorageService.deleteMessage(1L));
+    }
+
     @SneakyThrows
     @Test
-    void updateMessageTest() {
+    void updateMessage() {
         messageRepository.deleteAll();
         messageRepository.save(MessageUtils.getMessageFromDto(MailStorageTestUtils.getMessageDto()));
         var messageDto = MailStorageTestUtils.getMessageDtoForUpdate();

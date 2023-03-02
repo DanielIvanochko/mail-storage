@@ -46,7 +46,7 @@ class MessageControllerTest {
 
     @SneakyThrows
     @Test
-    void addMessageTest() {
+    void addMessage() {
         String messageJson = objectMapper.writeValueAsString(getMessageDto());
         var result = mvc.perform(post("/message")
                         .contentType(APPLICATION_JSON)
@@ -57,7 +57,7 @@ class MessageControllerTest {
 
     @SneakyThrows
     @Test
-    void updateMessageTest() {
+    void updateMessage() {
         messageRepository.save(MessageUtils.getMessageFromDto(getMessageDto()));
         String updateMessageJson = objectMapper.writeValueAsString(getMessageDtoForUpdate());
         var result = mvc.perform(put("/message/1")
@@ -99,6 +99,14 @@ class MessageControllerTest {
         var message = messageRepository.findByNumber(1L);
         assertEquals(200, result.getResponse().getStatus());
         assertTrue(message.isEmpty());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteNotExistingMessage() {
+        var result = mvc.perform(delete("/message/1"))
+                .andReturn();
+        assertEquals(404, result.getResponse().getStatus());
     }
 
     @SneakyThrows
