@@ -47,7 +47,7 @@ public class MessageController {
                     @CacheEvict(cacheNames = {"topic", "type"}, allEntries = true)
             }
     )
-    public void deleteMessage(@PathVariable Long number) {
+    public void deleteMessage(@PathVariable Long number) throws MessageWithNumberNotFound {
         service.deleteMessage(number);
     }
 

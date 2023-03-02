@@ -14,7 +14,7 @@ import java.util.List;
 public interface MailStorageService {
     void addMessage(MessageDto messageDto) throws MessageWithNumberAlreadyExists;
 
-    void deleteMessage(Long number);
+    void deleteMessage(Long number) throws MessageWithNumberNotFound;
 
     Message updateMessage(UpdateMessageDto updateMessageDto, Long number) throws DraftMessageException, MessageWithNumberNotFound;
 

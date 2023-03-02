@@ -67,8 +67,9 @@ public class MailStorageServiceImpl implements MailStorageService {
     }
 
 
-    public void deleteMessage(Long number) {
-        repository.deleteByNumber(number);
+    public void deleteMessage(Long number) throws MessageWithNumberNotFound {
+        Message message = findMessageByNumber(number);
+        repository.delete(message);
     }
 
     public List<Message> findMessagesByDateRange(DateRangeDto dateRangeDto) {
