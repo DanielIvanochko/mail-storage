@@ -34,7 +34,7 @@ class MailStorageServiceTest {
         this.mailStorageService = mailStorageService;
     }
 
-    @AfterEach
+    @BeforeEach
     void tearDown() {
         messageRepository.deleteAll();
     }
