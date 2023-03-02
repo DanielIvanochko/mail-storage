@@ -29,9 +29,9 @@ class MailStorageServiceTest {
     private final MailStorageService mailStorageService;
 
     @Autowired
-    MailStorageServiceTest(MessageRepository messageRepository) {
+    MailStorageServiceTest(MessageRepository messageRepository, MailStorageService mailStorageService) {
         this.messageRepository = messageRepository;
-        this.mailStorageService = new MailStorageServiceImpl(messageRepository);
+        this.mailStorageService = mailStorageService;
     }
 
     @AfterEach
@@ -126,6 +126,11 @@ class MailStorageServiceTest {
         assertEqualityOfTwoMessageList(expectedMessages, messagesByDateRange);
     }
 
+    @Test
+    void constructorTest() {
+        MailStorageServiceImpl service = new MailStorageServiceImpl(messageRepository);
+        assertEquals(messageRepository, service.getRepository());
+    }
 
     void assertEqualityOfTwoMessageList(final List<Message> expected, final List<Message> actual) {
         assertEquals(expected.size(), actual.size());
