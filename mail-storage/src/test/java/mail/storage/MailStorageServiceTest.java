@@ -13,7 +13,6 @@ import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.repository.MessageRepository;
 import mail.storage.service.MailStorageService;
 import mail.storage.service.MailStorageServiceImpl;
-import mail.storage.util.MessageUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +42,7 @@ class MailStorageServiceTest {
 
     @Test
     void createMessageThatExists() {
-        messageRepository.save(MessageUtils.getMessageFromDto(MailStorageTestUtils.getMessageDto()));
+        messageRepository.save(new Message(MailStorageTestUtils.getMessageDto()));
         assertThrows(MessageWithNumberAlreadyExists.class, () -> mailStorageService.addMessage(getMessageDto()));
     }
 
@@ -51,7 +50,7 @@ class MailStorageServiceTest {
     void updateNotDraftMessage() {
         var messageDto = MailStorageTestUtils.getMessageDto();
         messageDto.setType(MessageType.MAIN);
-        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        messageRepository.save( new Message(messageDto));
         assertThrows(DraftMessageException.class, () -> mailStorageService.updateMessage(getMessageDtoForUpdate(), 1L));
     }
 
@@ -78,7 +77,7 @@ class MailStorageServiceTest {
     @SneakyThrows
     void deleteMessage() {
         MessageDto messageDto = MailStorageTestUtils.getMessageDto();
-        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        messageRepository.save(new Message(messageDto));
         mailStorageService.deleteMessage(messageDto.getNumber());
         var messageOptional = messageRepository.findByNumber(messageDto.getNumber());
         assertTrue(messageOptional.isEmpty());
@@ -93,7 +92,7 @@ class MailStorageServiceTest {
     @Test
     void updateMessage() {
         messageRepository.deleteAll();
-        messageRepository.save(MessageUtils.getMessageFromDto(MailStorageTestUtils.getMessageDto()));
+        messageRepository.save(new Message(MailStorageTestUtils.getMessageDto()));
         var messageDto = MailStorageTestUtils.getMessageDtoForUpdate();
         mailStorageService.updateMessage(messageDto, 1L);
         var message = messageRepository.findByNumber(1L).orElseThrow();

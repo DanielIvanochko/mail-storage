@@ -10,12 +10,9 @@ import mail.storage.exception.DraftMessageException;
 import mail.storage.exception.MessageWithNumberAlreadyExists;
 import mail.storage.exception.MessageWithNumberNotFound;
 import mail.storage.repository.MessageRepository;
-import mail.storage.util.MessageUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static mail.storage.util.MessageUtils.getMessageFromDto;
 
 
 @Service
@@ -29,7 +26,7 @@ public class MailStorageServiceImpl implements MailStorageService {
         if (numberOfMessageAlreadyExists(messageDto)) {
             throw new MessageWithNumberAlreadyExists(String.format("Message with number %d already exists", messageDto.getNumber()));
         } else {
-            repository.save(getMessageFromDto(messageDto));
+            repository.save(new Message(messageDto));
         }
     }
 
@@ -39,8 +36,8 @@ public class MailStorageServiceImpl implements MailStorageService {
 
     public Message updateMessage(UpdateMessageDto updateMessageDto, Long number) throws DraftMessageException, MessageWithNumberNotFound {
         final Message message = findMessageByNumber(number);
-        if (isMessageDraft(message)) {
-            MessageUtils.updateMessageWithDto(message, updateMessageDto);
+        if (message.isDraft()) {
+            message.updateWithDto(updateMessageDto);
             return repository.save(message);
         } else {
             throw new DraftMessageException("The message must be draft for update");
@@ -59,11 +56,6 @@ public class MailStorageServiceImpl implements MailStorageService {
     public List<Message> findMessagesByTopic(MsgTopic topic) {
         return repository.findByTopic(topic.getTopicName());
     }
-
-    private boolean isMessageDraft(Message message) {
-        return message.getType().equals(MessageType.DRAFT);
-    }
-
 
     public void deleteMessage(Long number) throws MessageWithNumberNotFound {
         Message message = findMessageByNumber(number);

@@ -1,9 +1,12 @@
 package mail.storage.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import mail.storage.dto.MessageDto;
+import mail.storage.dto.UpdateMessageDto;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -31,7 +34,6 @@ public class Message implements Serializable {
     private Date date;
     @Pattern(regexp = "^(http|https)://[a-zA-Z0-9]+([\\-\\.]{1}[a-zA-Z0-9]+)*\\.[a-zA-Z]{2,5}(:[0-9]{1,5})?(/{0,1}[a-zA-Z0-9\\-\\.\\?\\,\\'/\\\\\\+&amp;%\\$#_]*)?$")
     private String attachmentUrl;
-
     private MessageType type;
 
     @RequiredArgsConstructor
@@ -44,4 +46,30 @@ public class Message implements Serializable {
         TRASH(5);
         final int value;
     }
+
+    public Message(MessageDto messageDto) {
+        body = messageDto.getBody();
+        topic = messageDto.getTopic();
+        type = messageDto.getType();
+        date = new Date();
+        attachmentUrl = messageDto.getAttachmentUrl();
+        sender = messageDto.getSender();
+        receiver = messageDto.getReceiver();
+        number = messageDto.getNumber();
+    }
+
+    @JsonIgnore
+    public boolean isDraft() {
+        return type != null && type.equals(MessageType.DRAFT);
+    }
+
+    public void updateWithDto(UpdateMessageDto messageDto) {
+        body = messageDto.getBody();
+        topic = messageDto.getTopic();
+        type = messageDto.getType();
+        attachmentUrl = messageDto.getAttachmentUrl();
+        sender = messageDto.getSender();
+        receiver = messageDto.getReceiver();
+    }
+
 }

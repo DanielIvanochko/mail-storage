@@ -8,7 +8,6 @@ import mail.storage.domain.Message.MessageType;
 import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.repository.MessageRepository;
-import mail.storage.util.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +70,7 @@ class MessageControllerTest {
     @SneakyThrows
     @Test
     void updateMessage() {
-        messageRepository.save(MessageUtils.getMessageFromDto(getMessageDto()));
+        messageRepository.save(new Message(getMessageDto()));
         String updateMessageJson = objectMapper.writeValueAsString(getMessageDtoForUpdate());
         var result = mvc.perform(put("/messages/1")
                         .contentType(APPLICATION_JSON)
@@ -85,7 +84,7 @@ class MessageControllerTest {
     @Test
     void getMessageByNumber() {
         MessageDto messageDto = getMessageDto();
-        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        messageRepository.save(new Message(messageDto));
         var result = mvc.perform(get("/messages/1")
                         .contentType(APPLICATION_JSON))
                 .andReturn();
@@ -106,7 +105,7 @@ class MessageControllerTest {
     @Test
     void deleteMessageByNumber() {
         MessageDto messageDto = getMessageDto();
-        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        messageRepository.save(new Message(messageDto));
         var result = mvc.perform(delete("/messages/1"))
                 .andReturn();
         var message = messageRepository.findByNumber(1L);
@@ -126,7 +125,7 @@ class MessageControllerTest {
     @Test
     void getMessagesByTopic() {
         MessageDto messageDto = getMessageDto();
-        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        messageRepository.save(new Message(messageDto));
         var result = mvc.perform(get("/messages/topics/" + messageDto.getTopic()))
                 .andReturn();
         Message[] messages = objectMapper.readValue(result.getResponse().getContentAsString(), Message[].class);
@@ -139,7 +138,7 @@ class MessageControllerTest {
     @Test
     void getMessagesByType() {
         MessageDto messageDto = getMessageDto();
-        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        messageRepository.save(new Message(messageDto));
         var result = mvc.perform(get("/messages/types/" + messageDto.getType()))
                 .andReturn();
         Message[] messages = objectMapper.readValue(result.getResponse().getContentAsString(), Message[].class);
@@ -152,7 +151,7 @@ class MessageControllerTest {
     @Test
     void getMessagesByDateRange() {
         MessageDto messageDto = getMessageDto();
-        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        messageRepository.save(new Message(messageDto));
         DateRangeDto dateRangeDto = DateRangeDto
                 .builder()
                 .beginDate(getBeginDate())
@@ -172,7 +171,7 @@ class MessageControllerTest {
     void addMessageThatAlreadyExists() {
         MessageDto messageDto = getMessageDto();
         String entityJson = objectMapper.writeValueAsString(messageDto);
-        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        messageRepository.save(new Message(messageDto));
         var result = mvc.perform(post("/messages")
                         .contentType(APPLICATION_JSON)
                         .content(entityJson))
@@ -185,7 +184,7 @@ class MessageControllerTest {
     void updateMessageThatIsNotDraft() {
         MessageDto messageDto = getMessageDto();
         messageDto.setType(MessageType.MAIN);
-        messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
+        messageRepository.save(new Message(messageDto));
         var updateMessageDto = getMessageDtoForUpdate();
         String entityJson = objectMapper.writeValueAsString(updateMessageDto);
         var result = mvc.perform(put("/messages/1")
