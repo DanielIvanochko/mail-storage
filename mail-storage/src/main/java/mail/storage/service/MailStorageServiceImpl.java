@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import mail.storage.domain.Message;
 import mail.storage.domain.Message.MessageType;
-import mail.storage.dto.DateRangeDto;
-import mail.storage.dto.MessageDto;
-import mail.storage.dto.UpdateMessageDto;
+import mail.storage.dto.*;
 import mail.storage.exception.DraftMessageException;
 import mail.storage.exception.MessageWithNumberAlreadyExists;
 import mail.storage.exception.MessageWithNumberNotFound;
@@ -54,12 +52,12 @@ public class MailStorageServiceImpl implements MailStorageService {
                 .orElseThrow(() -> new MessageWithNumberNotFound(String.format("The message with number %d was not found", number)));
     }
 
-    public List<Message> findMessagesByType(String type) {
-        return repository.findByType(MessageType.valueOf(type.toUpperCase()));
+    public List<Message> findMessagesByType(MsgType type) {
+        return repository.findByType(MessageType.valueOf(type.getTypeName().toUpperCase()));
     }
 
-    public List<Message> findMessagesByTopic(String topic) {
-        return repository.findByTopic(topic);
+    public List<Message> findMessagesByTopic(MsgTopic topic) {
+        return repository.findByTopic(topic.getTopicName());
     }
 
     private boolean isMessageDraft(Message message) {

@@ -3,9 +3,7 @@ package mail.storage.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mail.storage.domain.Message;
-import mail.storage.dto.DateRangeDto;
-import mail.storage.dto.MessageDto;
-import mail.storage.dto.UpdateMessageDto;
+import mail.storage.dto.*;
 import mail.storage.exception.DraftMessageException;
 import mail.storage.exception.MessageWithNumberAlreadyExists;
 import mail.storage.exception.MessageWithNumberNotFound;
@@ -60,13 +58,13 @@ public class MessageController {
     @GetMapping("/topics/{topicName}")
     @Cacheable(key = "#topicName", value = "topic")
     public List<Message> findMessagesByTopic(@PathVariable String topicName) {
-        return service.findMessagesByTopic(topicName);
+        return service.findMessagesByTopic(new MsgTopic(topicName));
     }
 
     @GetMapping("/types/{typeName}")
     @Cacheable(key = "#typeName", value = "type")
     public List<Message> findMessagesByType(@PathVariable String typeName) {
-        return service.findMessagesByType(typeName);
+        return service.findMessagesByType(new MsgType(typeName));
     }
 
     @GetMapping("/date")

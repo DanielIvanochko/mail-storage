@@ -57,6 +57,19 @@ class MessageControllerTest {
 
     @SneakyThrows
     @Test
+    void addMessageWithIncorrectAttachmentUrl() {
+        MessageDto messageDto = getMessageDto();
+        messageDto.setAttachmentUrl("some-url");
+        String messageJson = objectMapper.writeValueAsString(messageDto);
+        var result = mvc.perform(post("/messages")
+                        .content(messageJson)
+                        .contentType(APPLICATION_JSON))
+                .andReturn();
+        assertEquals(400, result.getResponse().getStatus());
+    }
+
+    @SneakyThrows
+    @Test
     void updateMessage() {
         messageRepository.save(MessageUtils.getMessageFromDto(getMessageDto()));
         String updateMessageJson = objectMapper.writeValueAsString(getMessageDtoForUpdate());

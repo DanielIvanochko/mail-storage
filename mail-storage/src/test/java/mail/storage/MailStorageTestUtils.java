@@ -83,7 +83,7 @@ public class MailStorageTestUtils {
                 .topic("meeting")
                 .type(MessageType.DRAFT)
                 .body("Please connect to the meeting")
-                .attachmentUrl("www.google.com/images/1")
+                .attachmentUrl("https://www.google.com/images/1")
                 .build();
     }
 

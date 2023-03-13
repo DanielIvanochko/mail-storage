@@ -1,9 +1,7 @@
 package mail.storage.service;
 
 import mail.storage.domain.Message;
-import mail.storage.dto.DateRangeDto;
-import mail.storage.dto.MessageDto;
-import mail.storage.dto.UpdateMessageDto;
+import mail.storage.dto.*;
 import mail.storage.exception.DraftMessageException;
 import mail.storage.exception.MessageWithNumberAlreadyExists;
 import mail.storage.exception.MessageWithNumberNotFound;
@@ -19,9 +17,9 @@ public interface MailStorageService {
 
     Message findMessageByNumber(Long number) throws MessageWithNumberNotFound;
 
-    List<Message> findMessagesByType(String type);
+    List<Message> findMessagesByType(MsgType type);
 
-    List<Message> findMessagesByTopic(String topic);
+    List<Message> findMessagesByTopic(MsgTopic topic);
 
     List<Message> findMessagesByDateRange(DateRangeDto dateRangeDto);
 }

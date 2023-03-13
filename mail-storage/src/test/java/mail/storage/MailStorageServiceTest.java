@@ -5,6 +5,8 @@ import mail.storage.domain.Message;
 import mail.storage.domain.Message.MessageType;
 import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
+import mail.storage.dto.MsgTopic;
+import mail.storage.dto.MsgType;
 import mail.storage.exception.DraftMessageException;
 import mail.storage.exception.MessageWithNumberAlreadyExists;
 import mail.storage.exception.MessageWithNumberNotFound;
@@ -104,7 +106,7 @@ class MailStorageServiceTest {
     @Test
     void getMessagesByTopic() {
         addTestMessagesToDb();
-        var messagesByTopic = mailStorageService.findMessagesByTopic("emergency");
+        var messagesByTopic = mailStorageService.findMessagesByTopic(new MsgTopic("emergency"));
         var expectedMessagesByTopic = getMessagesByCriteria(message -> message.getTopic().equals("emergency"));
         assertEqualityOfTwoMessageList(expectedMessagesByTopic, messagesByTopic);
     }
@@ -112,7 +114,7 @@ class MailStorageServiceTest {
     @Test
     void getMessagesByType() {
         addTestMessagesToDb();
-        var messagesByType = mailStorageService.findMessagesByType("ad");
+        var messagesByType = mailStorageService.findMessagesByType(new MsgType("ad"));
         var expectedMessagesByType = getMessagesByCriteria(message -> message.getType().equals(MessageType.AD));
         assertEqualityOfTwoMessageList(expectedMessagesByType, messagesByType);
     }
