@@ -6,7 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mail.storage.domain.MessageType;
+import mail.storage.domain.Message;
+import mail.storage.domain.Message.MessageType;
 
 @Data
 @AllArgsConstructor

@@ -1,7 +1,7 @@
 package mail.storage;
 
 import mail.storage.domain.Message;
-import mail.storage.domain.MessageType;
+import mail.storage.domain.Message.MessageType;
 import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.dto.UpdateMessageDto;

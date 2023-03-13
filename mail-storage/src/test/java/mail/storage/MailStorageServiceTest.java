@@ -2,7 +2,7 @@ package mail.storage;
 
 import lombok.SneakyThrows;
 import mail.storage.domain.Message;
-import mail.storage.domain.MessageType;
+import mail.storage.domain.Message.MessageType;
 import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.exception.DraftMessageException;

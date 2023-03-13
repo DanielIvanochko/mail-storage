@@ -1,7 +1,7 @@
 package mail.storage.repository;
 
 import mail.storage.domain.Message;
-import mail.storage.domain.MessageType;
+import mail.storage.domain.Message.MessageType;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import mail.storage.controller.MessageController;
 import mail.storage.domain.Message;
-import mail.storage.domain.MessageType;
+import mail.storage.domain.Message.MessageType;
 import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
 import mail.storage.repository.MessageRepository;
@@ -48,7 +48,7 @@ class MessageControllerTest {
     @Test
     void addMessage() {
         String messageJson = objectMapper.writeValueAsString(getMessageDto());
-        var result = mvc.perform(post("/message")
+        var result = mvc.perform(post("/messages")
                         .contentType(APPLICATION_JSON)
                         .content(messageJson))
                 .andReturn();
@@ -60,7 +60,7 @@ class MessageControllerTest {
     void updateMessage() {
         messageRepository.save(MessageUtils.getMessageFromDto(getMessageDto()));
         String updateMessageJson = objectMapper.writeValueAsString(getMessageDtoForUpdate());
-        var result = mvc.perform(put("/message/1")
+        var result = mvc.perform(put("/messages/1")
                         .contentType(APPLICATION_JSON)
                         .content(updateMessageJson))
                 .andReturn();
@@ -73,7 +73,7 @@ class MessageControllerTest {
     void getMessageByNumber() {
         MessageDto messageDto = getMessageDto();
         messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
-        var result = mvc.perform(get("/message/1")
+        var result = mvc.perform(get("/messages/1")
                         .contentType(APPLICATION_JSON))
                 .andReturn();
         var entityJson = result.getResponse().getContentAsString();
@@ -94,7 +94,7 @@ class MessageControllerTest {
     void deleteMessageByNumber() {
         MessageDto messageDto = getMessageDto();
         messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
-        var result = mvc.perform(delete("/message/1"))
+        var result = mvc.perform(delete("/messages/1"))
                 .andReturn();
         var message = messageRepository.findByNumber(1L);
         assertEquals(200, result.getResponse().getStatus());
@@ -104,7 +104,7 @@ class MessageControllerTest {
     @Test
     @SneakyThrows
     void deleteNotExistingMessage() {
-        var result = mvc.perform(delete("/message/1"))
+        var result = mvc.perform(delete("/messages/1"))
                 .andReturn();
         assertEquals(404, result.getResponse().getStatus());
     }
@@ -114,7 +114,7 @@ class MessageControllerTest {
     void getMessagesByTopic() {
         MessageDto messageDto = getMessageDto();
         messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
-        var result = mvc.perform(get("/message/topic?name=" + messageDto.getTopic()))
+        var result = mvc.perform(get("/messages/topics/" + messageDto.getTopic()))
                 .andReturn();
         Message[] messages = objectMapper.readValue(result.getResponse().getContentAsString(), Message[].class);
         Message firstMessage = messages[0];
@@ -127,7 +127,7 @@ class MessageControllerTest {
     void getMessagesByType() {
         MessageDto messageDto = getMessageDto();
         messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
-        var result = mvc.perform(get("/message/type?name=" + messageDto.getType()))
+        var result = mvc.perform(get("/messages/types/" + messageDto.getType()))
                 .andReturn();
         Message[] messages = objectMapper.readValue(result.getResponse().getContentAsString(), Message[].class);
         Message firstMessage = messages[0];
@@ -146,7 +146,7 @@ class MessageControllerTest {
                 .endDate(getEndDate())
                 .build();
         var dateRangeJson = objectMapper.writeValueAsString(dateRangeDto);
-        var result = mvc.perform(get("/message/date")
+        var result = mvc.perform(get("/messages/date")
                         .contentType(APPLICATION_JSON)
                         .content(dateRangeJson))
                 .andReturn();
@@ -160,7 +160,7 @@ class MessageControllerTest {
         MessageDto messageDto = getMessageDto();
         String entityJson = objectMapper.writeValueAsString(messageDto);
         messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
-        var result = mvc.perform(post("/message")
+        var result = mvc.perform(post("/messages")
                         .contentType(APPLICATION_JSON)
                         .content(entityJson))
                 .andReturn();
@@ -175,7 +175,7 @@ class MessageControllerTest {
         messageRepository.save(MessageUtils.getMessageFromDto(messageDto));
         var updateMessageDto = getMessageDtoForUpdate();
         String entityJson = objectMapper.writeValueAsString(updateMessageDto);
-        var result = mvc.perform(put("/message/1")
+        var result = mvc.perform(put("/messages/1")
                         .contentType(APPLICATION_JSON)
                         .content(entityJson))
                 .andReturn();
@@ -185,7 +185,7 @@ class MessageControllerTest {
     @SneakyThrows
     @Test
     void getMessageByNotExistingNumber() {
-        var result = mvc.perform(get("/message/1"))
+        var result = mvc.perform(get("/messages/1"))
                 .andReturn();
         assertEquals(404, result.getResponse().getStatus());
     }
