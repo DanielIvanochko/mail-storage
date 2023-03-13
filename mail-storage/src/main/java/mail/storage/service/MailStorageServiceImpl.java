@@ -23,6 +23,7 @@ public class MailStorageServiceImpl implements MailStorageService {
     private final MessageRepository repository;
 
     public void addMessage(MessageDto messageDto) throws MessageWithNumberAlreadyExists {
+        repository.findByNumber(messageDto.getNumber());
         if (numberOfMessageAlreadyExists(messageDto)) {
             throw new MessageWithNumberAlreadyExists(String.format("Message with number %d already exists", messageDto.getNumber()));
         } else {
@@ -31,7 +32,7 @@ public class MailStorageServiceImpl implements MailStorageService {
     }
 
     private boolean numberOfMessageAlreadyExists(MessageDto messageDto) {
-        return repository.findByNumber(messageDto.getNumber()).isPresent();
+        return repository.existsByNumber(messageDto.getNumber());
     }
 
     public Message updateMessage(UpdateMessageDto updateMessageDto, Long number) throws DraftMessageException, MessageWithNumberNotFound {

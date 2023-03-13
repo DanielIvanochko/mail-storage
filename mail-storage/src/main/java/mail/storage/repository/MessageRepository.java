@@ -20,4 +20,5 @@ public interface MessageRepository extends MongoRepository<Message, String> {
 
     @Query("{'date': {$gte: ?0, $lte: ?1} }")
     List<Message> findByDateRange(Date beginDate, Date endDate);
+    boolean existsByNumber(Long number);
 }

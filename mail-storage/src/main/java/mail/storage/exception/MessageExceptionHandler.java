@@ -23,8 +23,7 @@ public class MessageExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MessageException.class)
     public ResponseEntity<MessageExceptionInfo> handleDraftMessageException(Exception exception) {
         MessageExceptionInfo info = createMessageExceptionInfo(exception);
-        log.error("Message exception caught");
-        log.error(exception.getMessage());
+        log.error("Message exception caught:\n" + exception.getMessage());
         return ResponseEntity
                 .badRequest()
                 .body(info);
@@ -44,9 +43,6 @@ public class MessageExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private MessageExceptionInfo createMessageExceptionInfo(Exception exception) {
-        return MessageExceptionInfo.builder()
-                .timeStamp(LocalDateTime.now())
-                .message(exception.getMessage())
-                .build();
+        return new MessageExceptionInfo(LocalDateTime.now(), exception.getMessage());
     }
 }
