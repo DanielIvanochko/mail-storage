@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/message")
+@RequestMapping("/messages")
 public class MessageController {
     private final MailStorageService service;
 
@@ -57,15 +57,15 @@ public class MessageController {
         return service.findMessageByNumber(number);
     }
 
-    @GetMapping("/topic")
+    @GetMapping("/topics/{topicName}")
     @Cacheable(key = "#topicName", value = "topic")
-    public List<Message> findMessagesByTopic(@RequestParam("name") String topicName) {
+    public List<Message> findMessagesByTopic(@PathVariable String topicName) {
         return service.findMessagesByTopic(topicName);
     }
 
-    @GetMapping("/type")
+    @GetMapping("/types/{typeName}")
     @Cacheable(key = "#typeName", value = "type")
-    public List<Message> findMessagesByType(@RequestParam("name") String typeName) {
+    public List<Message> findMessagesByType(@PathVariable String typeName) {
         return service.findMessagesByType(typeName);
     }
 

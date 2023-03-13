@@ -34,4 +34,4 @@ build/
 ## Resources
 src/main/resources/
 ## MVN Folder
-.mvn/
+./.mvn
