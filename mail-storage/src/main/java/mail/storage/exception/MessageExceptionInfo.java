@@ -1,7 +1,14 @@
 package mail.storage.exception;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
-public record MessageExceptionInfo(LocalDateTime timeStamp, String message) {
+@AllArgsConstructor
+@Data
+public class MessageExceptionInfo {
+    private final LocalDateTime timeStamp;
+    private final String message;
 }

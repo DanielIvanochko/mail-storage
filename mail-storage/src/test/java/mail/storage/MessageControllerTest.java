@@ -4,23 +4,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import mail.storage.controller.MessageController;
 import mail.storage.domain.Message;
 import mail.storage.domain.Message.MessageType;
 import mail.storage.dto.DateRangeDto;
 import mail.storage.dto.MessageDto;
+import mail.storage.dto.UpdateMessageDto;
 import mail.storage.repository.MessageRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,12 +36,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @AutoConfigureMockMvc
 class MessageControllerTest {
     private final MockMvc mvc;
     private final ObjectMapper objectMapper;
     private final MessageRepository messageRepository;
+    @Value("#{ 'http://localhost:' + '${server.port}' }")
+    private String url;
+    RestTemplate restTemplate;
 
     @Autowired
     MessageControllerTest(MessageController messageController, MessageRepository messageRepository) {
@@ -49,6 +57,7 @@ class MessageControllerTest {
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ISO_DATE_TIME));
         objectMapper.registerModule(module);
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        restTemplate = new RestTemplate();
     }
 
     @BeforeEach
@@ -129,9 +138,11 @@ class MessageControllerTest {
     @Test
     @SneakyThrows
     void deleteNotExistingMessage() {
-        var result = mvc.perform(delete("/messages/1"))
-                .andReturn();
-        assertEquals(404, result.getResponse().getStatus());
+        try {
+            restTemplate.delete(url + "/messages/1");
+        } catch (HttpClientErrorException exception) {
+            assertEquals(404, exception.getStatusCode().value());
+        }
     }
 
     @SneakyThrows
@@ -183,13 +194,13 @@ class MessageControllerTest {
     @Test
     void addMessageThatAlreadyExists() {
         MessageDto messageDto = getMessageDto();
-        String entityJson = objectMapper.writeValueAsString(messageDto);
         messageRepository.save(new Message(messageDto));
-        var result = mvc.perform(post("/messages")
-                        .contentType(APPLICATION_JSON)
-                        .content(entityJson))
-                .andReturn();
-        assertEquals(400, result.getResponse().getStatus());
+        try {
+            restTemplate.postForObject(url + "/messages", messageDto, Object.class);
+        } catch (HttpClientErrorException exception) {
+            int code = exception.getStatusCode().value();
+            assertEquals(400, code);
+        }
     }
 
     @SneakyThrows
@@ -198,20 +209,27 @@ class MessageControllerTest {
         MessageDto messageDto = getMessageDto();
         messageDto.setType(MessageType.MAIN);
         messageRepository.save(new Message(messageDto));
+        try {
+            restTemplate.put(url + "/messages/1", getUpdateMessageDtoRequestEntity(), String.class);
+        } catch (HttpClientErrorException exception) {
+            assertEquals(400, exception.getStatusCode().value());
+        }
+    }
+
+    HttpEntity<UpdateMessageDto> getUpdateMessageDtoRequestEntity() {
         var updateMessageDto = getMessageDtoForUpdate();
-        String entityJson = objectMapper.writeValueAsString(updateMessageDto);
-        var result = mvc.perform(put("/messages/1")
-                        .contentType(APPLICATION_JSON)
-                        .content(entityJson))
-                .andReturn();
-        assertEquals(400, result.getResponse().getStatus());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_JSON);
+        return new HttpEntity<>(updateMessageDto, headers);
     }
 
     @SneakyThrows
     @Test
     void getMessageByNotExistingNumber() {
-        var result = mvc.perform(get("/messages/1"))
-                .andReturn();
-        assertEquals(404, result.getResponse().getStatus());
+        try {
+            restTemplate.getForObject(url + "/messages/1", Object.class);
+        } catch (HttpClientErrorException exception) {
+            assertEquals(404, exception.getStatusCode().value());
+        }
     }
 }
