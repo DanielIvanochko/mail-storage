@@ -55,8 +55,13 @@ class MessageTest {
     void equalsAndHashCodeTest() {
         Message first = new Message(getMessageDto());
         Message second = new Message(getMessageDto());
+        Message third = new Message(getMessageDto());
         assertEquals(first, second);
         assertEquals(first.hashCode(), second.hashCode());
+        assertEquals(first, third);
+        assertEquals(second, first);
+        assertEquals(first.hashCode(), third.hashCode());
+        assertEquals(second.hashCode(), first.hashCode());
     }
 
     @Test
