@@ -1,17 +1,20 @@
 package mail.storage;
 
 import mail.storage.domain.Message;
+import mail.storage.domain.Message.MessageType;
 import mail.storage.dto.MessageDto;
 import mail.storage.dto.UpdateMessageDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalDateTime;
+
 import static mail.storage.MailStorageTestUtils.getMessageDto;
 import static mail.storage.MailStorageTestUtils.getMessageDtoForUpdate;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class MessageTest {
+class MessageTest {
     @Test
     void messageDtoConstructorTest() {
         MessageDto messageDto = getMessageDto();
@@ -23,6 +26,45 @@ public class MessageTest {
         assertEquals(messageDto.getAttachmentUrl(), message.getAttachmentUrl());
         assertEquals(messageDto.getReceiver(), message.getReceiver());
         assertEquals(messageDto.getSender(), message.getSender());
+    }
+
+    @Test
+    void messageBuilderTest() {
+        Message message = Message.builder()
+                .body("body")
+                .topic("topic")
+                .id("id")
+                .type(MessageType.MAIN)
+                .attachmentUrl("http://localhost")
+                .date(LocalDateTime.now())
+                .receiver("me@gmail.com")
+                .sender("you@gmail.com")
+                .number(1L)
+                .build();
+        assertEquals("body", message.getBody());
+        assertEquals("id", message.getId());
+        assertEquals("http://localhost", message.getAttachmentUrl());
+        assertEquals("topic", message.getTopic());
+        assertEquals(MessageType.MAIN, message.getType());
+        assertEquals(1L, message.getNumber());
+        assertEquals("me@gmail.com", message.getReceiver());
+        assertEquals("you@gmail.com", message.getSender());
+    }
+
+    @Test
+    void equalsTest() {
+        Message first = new Message(getMessageDto());
+        Message second = new Message(getMessageDto());
+        assertEquals(first, second);
+    }
+
+    @Test
+    void isDraftNegativeTest() {
+        Message message = new Message(getMessageDto());
+        message.setType(MessageType.MAIN);
+        assertFalse(message.isDraft());
+        message.setType(null);
+        assertFalse(message.isDraft());
     }
 
     @Test
