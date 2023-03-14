@@ -55,6 +55,8 @@ class MessageTest {
     void equalsTest() {
         Message first = new Message(getMessageDto());
         Message second = new Message(getMessageDto());
+        first.setDate(LocalDateTime.now());
+        second.setDate(LocalDateTime.now().plusDays(5));
         assertEquals(first, second);
     }
 
