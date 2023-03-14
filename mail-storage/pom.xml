@@ -72,12 +72,6 @@
 			<version>3.9.0.2155</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.batkinson.plugins</groupId>
-			<artifactId>maven-pack200-plugin</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.sonarsource.jacoco</groupId>
 			<artifactId>sonar-jacoco-plugin</artifactId>
 			<version>1.3.0.1538</version>
