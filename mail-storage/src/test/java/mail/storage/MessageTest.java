@@ -52,10 +52,11 @@ class MessageTest {
     }
 
     @Test
-    void equalsTest() {
+    void equalsAndHashCodeTest() {
         Message first = new Message(getMessageDto());
         Message second = new Message(getMessageDto());
         assertEquals(first, second);
+        assertEquals(first.hashCode(), second.hashCode());
     }
 
     @Test
@@ -65,6 +66,7 @@ class MessageTest {
         first.setType(MessageType.MAIN);
         second.setSender("hello@gmail.com");
         assertNotEquals(first, second);
+        assertNotEquals(first.hashCode(), second.hashCode());
     }
 
     @Test
