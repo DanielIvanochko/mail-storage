@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class MailStorageTestUtils {
-    private static final Date beginDate = new Date();
-    private static final Date endDate = Date.from(LocalDateTime.now().plusDays(5).atZone(ZoneId.systemDefault()).toInstant());
+    private static final LocalDateTime beginDate = LocalDateTime.now();
+    private static final LocalDateTime endDate = LocalDateTime.now().plusDays(5);
     private static final List<Message> messages = List.of(new Message("some_id1",
                     1L,
                     "sender1@gmail.com",
@@ -67,11 +67,11 @@ public class MailStorageTestUtils {
                 .build();
     }
 
-    public static Date getBeginDate() {
+    public static LocalDateTime getBeginDate() {
         return beginDate;
     }
 
-    public static Date getEndDate() {
+    public static LocalDateTime getEndDate() {
         return endDate;
     }
 
@@ -99,10 +99,10 @@ public class MailStorageTestUtils {
 
     public static boolean isMessageDateInRange(final Message message, final DateRangeDto dateRangeDto) {
         final var messageDate = message.getDate();
-        return (messageDate.after(dateRangeDto.getBeginDate())
+        return (messageDate.isAfter(dateRangeDto.getBeginDate())
                 || messageDate.equals(dateRangeDto.getBeginDate()))
                 &&
-                (message.getDate().before(dateRangeDto.getEndDate())
+                (message.getDate().isBefore(dateRangeDto.getEndDate())
                         || messageDate.equals(dateRangeDto.getEndDate()));
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +19,6 @@ public interface MessageRepository extends MongoRepository<Message, String> {
     List<Message> findByType(MessageType type);
 
     @Query("{'date': {$gte: ?0, $lte: ?1} }")
-    List<Message> findByDateRange(Date beginDate, Date endDate);
+    List<Message> findByDateRange(LocalDateTime beginDate, LocalDateTime endDate);
     boolean existsByNumber(Long number);
 }

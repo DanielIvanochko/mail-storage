@@ -12,13 +12,14 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Document("message")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"date"})
 public class Message implements Serializable {
     @Id
     private String id;
@@ -31,7 +32,7 @@ public class Message implements Serializable {
     private String topic;
     private String body;
     @NotEmpty
-    private Date date;
+    private LocalDateTime date;
     @Pattern(regexp = "^(http|https)://[a-zA-Z0-9]+([\\-\\.]{1}[a-zA-Z0-9]+)*\\.[a-zA-Z]{2,5}(:[0-9]{1,5})?(/{0,1}[a-zA-Z0-9\\-\\.\\?\\,\\'/\\\\\\+&amp;%\\$#_]*)?$")
     private String attachmentUrl;
     private MessageType type;
@@ -51,7 +52,7 @@ public class Message implements Serializable {
         body = messageDto.getBody();
         topic = messageDto.getTopic();
         type = messageDto.getType();
-        date = new Date();
+        date = LocalDateTime.now();
         attachmentUrl = messageDto.getAttachmentUrl();
         sender = messageDto.getSender();
         receiver = messageDto.getReceiver();

@@ -1,6 +1,12 @@
 package mail.storage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import mail.storage.controller.MessageController;
 import mail.storage.domain.Message;
@@ -15,6 +21,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static mail.storage.MailStorageTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +45,10 @@ class MessageControllerTest {
                 .build();
         this.objectMapper = new ObjectMapper();
         this.messageRepository = messageRepository;
+        SimpleModule module = new JavaTimeModule();
+        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ISO_DATE_TIME));
+        objectMapper.registerModule(module);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     @BeforeEach
