@@ -31,7 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
-## Resources
-src/main/resources/
 ## MVN Folder
 ./.mvn

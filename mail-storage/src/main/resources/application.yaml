@@ -1,0 +1,45 @@
+spring:
+  profiles:
+    active: "aws"
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "local"
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      auto-index-creation: true
+      database: mail-storage
+redis:
+  cache:
+    enabled: false
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "aws"
+  data:
+    mongodb:
+      uri: mongodb://18.159.207.237:27017/
+      auto-index-creation: true
+      database: mail-storage
+  cache:
+    type: redis
+    cache-names: message, topic, type
+  redis:
+    host: 18.159.207.237
+    port: 6379
